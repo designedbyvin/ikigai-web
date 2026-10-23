@@ -81,7 +81,6 @@
   function go(v, push = true) {
     if (!VIEWS.includes(v)) v = "write";
     if (activeView === "write" && v !== "write") flush();
-    if (v !== "write" && document.body.classList.contains("focus")) exitFocus();
     activeView = v;
     VIEWS.forEach(n => { const el = $("v-" + n); el.hidden = n !== v; if (n === v) { el.classList.remove("view-anim"); void el.offsetWidth; el.classList.add("view-anim"); } });
     document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-current", t.dataset.view === v ? "page" : "false"));
@@ -137,7 +136,7 @@
     $("sc-who").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(scene.who.includes(b.dataset.v))));
     const t = sceneText(scene);
     $("sceneSum").textContent = t || "Set the scene: where, who with, what weather";
-    $("sceneSum").classList.toggle("empty", !t);
+    $("sceneSum").classList.toggle("is-empty", !t);
   }
 
   // ---- Story starters ----
@@ -190,7 +189,7 @@
     ["title", "body", "highlight"].forEach(id => $(id).readOnly = ro);
     $("title").placeholder = ro ? "Untitled page" : "Give today a title";
     $("body").placeholder = ro ? "" : "Start anywhere. No one is reading but you…";
-    $("promptBox").hidden = ro; $("starters").hidden = ro; $("focusBtn").hidden = ro;
+    $("promptBox").hidden = ro; $("starters").hidden = ro;
     $("scene").hidden = ro;
     const st = sceneText(scene);
     $("roScene").hidden = !(ro && st);
@@ -219,7 +218,7 @@
   function updateCount() {
     const w = words($("body").value);
     const txt = `${w.toLocaleString()} ${w === 1 ? "word" : "words"}`;
-    $("count").textContent = txt; $("focusWc").textContent = txt;
+    $("count").textContent = txt;
     const del = $("del"); if (del) del.hidden = !entries.has(current);
     if (!isRO()) for (const m of MILESTONES) {
       const id = current + ":" + m;
@@ -252,7 +251,6 @@
   document.addEventListener("visibilitychange", () => { if (document.hidden) flush(); else if (activeView === "write") renderNudge(); });
   document.addEventListener("keydown", e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); if (activeView === "write" && !isRO()) { clearTimeout(saveTimer); save(); } }
-    if (e.key === "Escape" && document.body.classList.contains("focus")) exitFocus();
   });
 
   function resetDelete() {
@@ -299,75 +297,6 @@
       $("otdList").appendChild(b);
     });
   }
-
-  // ---- Focus mode + ambient sound ----
-  let actx = null, sound = null;
-  function noiseBuffer(type) {
-    const len = actx.sampleRate * 4, buf = actx.createBuffer(2, len, actx.sampleRate);
-    for (let c = 0; c < 2; c++) {
-      const d = buf.getChannelData(c); let last = 0;
-      for (let i = 0; i < len; i++) {
-        const w = Math.random() * 2 - 1;
-        if (type === "brown") { last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w;
-      }
-    }
-    return buf;
-  }
-  function stopSound() { if (sound) { sound.stop(); sound = null; } }
-  function playSound(kind) {
-    stopSound();
-    if (kind === "off") return;
-    try {
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      actx.resume();
-      const out = actx.createGain(); out.gain.value = 0; out.connect(actx.destination);
-      out.gain.linearRampToValueAtTime(1, actx.currentTime + 1.5);
-      const nodes = []; let timer = null;
-      if (kind === "rain") {
-        const src = actx.createBufferSource(); src.buffer = noiseBuffer("white"); src.loop = true;
-        const hp = actx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 600;
-        const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5500;
-        const g = actx.createGain(); g.gain.value = 0.12;
-        const lfo = actx.createOscillator(); lfo.frequency.value = 0.08; const lfoG = actx.createGain(); lfoG.gain.value = 0.04;
-        lfo.connect(lfoG); lfoG.connect(g.gain); lfo.start();
-        src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(out); src.start();
-        const low = actx.createBufferSource(); low.buffer = noiseBuffer("brown"); low.loop = true;
-        const lg = actx.createGain(); lg.gain.value = 0.25; low.connect(lg); lg.connect(out); low.start();
-        nodes.push(src, lfo, low);
-      } else {
-        const src = actx.createBufferSource(); src.buffer = noiseBuffer("brown"); src.loop = true;
-        const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 900;
-        const g = actx.createGain(); g.gain.value = 0.45;
-        src.connect(lp); lp.connect(g); g.connect(out); src.start(); nodes.push(src);
-        const clink = () => {
-          const o = actx.createOscillator(), og = actx.createGain(), t = actx.currentTime;
-          o.type = "sine"; o.frequency.value = 2200 + Math.random() * 1600;
-          og.gain.setValueAtTime(0, t); og.gain.linearRampToValueAtTime(0.025, t + 0.005); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
-          o.connect(og); og.connect(out); o.start(t); o.stop(t + 0.7);
-          timer = setTimeout(clink, 2500 + Math.random() * 6000);
-        };
-        timer = setTimeout(clink, 1800);
-      }
-      sound = { stop: () => { clearTimeout(timer); const t = actx.currentTime; out.gain.cancelScheduledValues(t); out.gain.setValueAtTime(out.gain.value, t); out.gain.linearRampToValueAtTime(0, t + 0.5); setTimeout(() => { nodes.forEach(n => { try { n.stop(); } catch (e) {} }); out.disconnect(); }, 600); } };
-    } catch (e) { toast("Sound isn't available in this browser."); }
-  }
-  document.querySelectorAll("[data-snd]").forEach(b => b.onclick = () => {
-    document.querySelectorAll("[data-snd]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-    playSound(b.dataset.snd);
-  });
-  function enterFocus() {
-    if (isRO()) return;
-    document.body.classList.add("focus"); $("focusBar").hidden = false; $("focusWc").hidden = false;
-    window.scrollTo({ top: 0 }); $("body").focus({ preventScroll: true });
-    try { document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {}
-  }
-  function exitFocus() {
-    document.body.classList.remove("focus"); $("focusBar").hidden = true; $("focusWc").hidden = true;
-    stopSound(); document.querySelectorAll("[data-snd]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.snd === "off")));
-    try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {}
-  }
-  $("focusBtn").onclick = enterFocus;
-  $("exitFocus").onclick = exitFocus;
 
   // ---- Calendar view ----
   ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => { const s = document.createElement("span"); s.className = "dow"; s.textContent = d.slice(0, 1); s.title = d; $("dows").appendChild(s); });
@@ -421,7 +350,7 @@
       $("stMonth").textContent = count; $("stMonthLbl").textContent = "pages this month";
     } else {
       $("monthLabel").textContent = String(yearView);
-      const box = $("year"); box.innerHTML = `<span></span>` + Array.from({ length: 31 }, (_, i) => `<span class="dn">${(i + 1) % 5 === 0 || i === 0 ? i + 1 : ""}</span>`).join("");
+      const box = $("year"); box.innerHTML = `<span></span>` + Array.from({ length: 31 }, (_, i) => `<span class="dn">${[1, 10, 20, 31].includes(i + 1) ? i + 1 : ""}</span>`).join("");
       let count = 0;
       for (let m = 0; m < 12; m++) {
         const ml = document.createElement("span"); ml.className = "ml"; ml.textContent = new Date(yearView, m, 1).toLocaleDateString(undefined, { month: "short" }); box.appendChild(ml);
@@ -655,7 +584,6 @@
     openDay(todayKey());
     if (start && start !== "write") go(start);
     setInterval(() => { if (activeView === "write") renderNudge(); }, 60000);
-    // Inside claude.ai the page saves through its downloads capability; on your own site it uses a normal browser download.
     try { downloads = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch (e) { downloads = null; }
   })();
 })();

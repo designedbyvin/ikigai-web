@@ -6,9 +6,8 @@ No account, no server, no cloud. Your pages are stored in your browser's Indexed
 
 ## Features
 
-- **Write:** a mood check-in, writing prompts that follow your mood, story starters, a highlight of the day, and scene details (where, who with, weather)
+- **Write:** handwriting-style text, a mood check-in, writing prompts that follow your mood, story starters, a highlight of the day, and scene details (where, who with, weather)
 - **Autosave:** saves as you type
-- **Focus mode:** just the page, with optional rain or café sounds
 - **Word milestones:** small messages at 100, 250, 500, 1,000 and 2,000 words
 - **Calendar:** a month view with mood dots, a year-in-moods view, monthly and yearly recaps, and a streak that forgives one missed day
 - **Past days are read-only:** you can read or delete them, but not edit them
@@ -24,7 +23,7 @@ No account, no server, no cloud. Your pages are stored in your browser's Indexed
 | `app.js` | All behavior: storage, views, import and export |
 | `favicon.svg` | Browser tab icon |
 
-No build step and no dependencies. The only external request is the Poppins font from Google Fonts.
+No build step and no dependencies. The only external requests are the Poppins and Caveat fonts from Google Fonts.
 
 ## Run locally
 

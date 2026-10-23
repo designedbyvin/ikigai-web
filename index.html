@@ -9,13 +9,13 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="bar">
   <div class="bar-in">
-    <div class="brand"><span class="logo" role="img" aria-label="Ikigai"><span aria-hidden="true">Ikiga<span class="li">ı<svg class="route" viewBox="0 0 87 30"><path d="M1 24.5 C 6 23, 10 19, 16 15 C 26 8.5, 40 7, 52 9.5 C 62 11.5, 70 12.5, 77 11.2 C 71 16, 62 16.6, 51 15 C 39 13, 28 14, 19 19 C 12 23, 7 25.5, 1 24.5 Z" fill="currentColor"/><circle cx="78" cy="12" r="10.5" fill="var(--honey)"/></svg></span></span></span><span class="jp" lang="ja">生き甲斐</span></div>
+    <div class="brand"><span class="logo" role="img" aria-label="Ikigai"><span aria-hidden="true">Ikiga<span class="li">ı<svg class="route" viewBox="0 0 87 30"><path d="M1 24.5 C 6 23, 10 19, 16 15 C 26 8.5, 40 7, 52 9.5 C 62 11.5, 70 12.5, 77 11.2 C 71 16, 62 16.6, 51 15 C 39 13, 28 14, 19 19 C 12 23, 7 25.5, 1 24.5 Z" fill="currentColor"/><circle cx="78" cy="12" r="10.5" fill="var(--honey)"/></svg></span></span></span></div>
     <nav class="tabs" aria-label="Main">
       <button class="tab" data-view="write"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13l1-3.5L10.5 3 13 5.5 6.5 12z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Write</button>
       <button class="tab" data-view="calendar"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="3.5" width="11" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 7h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Calendar</button>
@@ -24,40 +24,29 @@
   </div>
 </header>
 
-<div class="focus-bar" id="focusBar" hidden>
-  <span class="lbl">Sound</span>
-  <div class="seg" role="group" aria-label="Ambient sound">
-    <button data-snd="off" aria-pressed="true">Off</button>
-    <button data-snd="rain" aria-pressed="false">Rain</button>
-    <button data-snd="cafe" aria-pressed="false">Café</button>
-  </div>
-  <button class="exit" id="exitFocus">Exit focus</button>
-</div>
-<div class="focus-wc" id="focusWc" hidden>0 words</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="main">
   <!-- WRITE -->
   <div id="v-write" class="view-anim" style="display:grid;gap:16px">
-    <div class="nudge hide-in-focus" id="nudge" hidden><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M12.5 9.5A5 5 0 016.5 3.5a5 5 0 106 6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span>Today's page is still waiting. Even one line counts before the day ends.</span></div>
+    <div class="nudge" id="nudge" hidden><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M12.5 9.5A5 5 0 016.5 3.5a5 5 0 106 6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span>Today's page is still waiting. Even one line counts before the day ends.</span></div>
 
     <section class="card page" id="pageCard">
       <div class="date-line">
         <div class="day-nav">
-          <button class="icon-btn hide-in-focus" id="prevD" aria-label="Previous day"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="icon-btn" id="prevD" aria-label="Previous day"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <span class="when" id="when">Friday, 23 October 2026</span>
-          <button class="icon-btn hide-in-focus" id="nextD" aria-label="Next day"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="icon-btn" id="nextD" aria-label="Next day"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="right-tools">
           <span class="status" id="status" aria-live="polite"><span class="pip"></span><span id="statusText">Saves automatically</span></span>
-          <button class="focus-btn hide-in-focus" id="focusBtn"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Focus</button>
         </div>
       </div>
-      <h2 class="greet hide-in-focus" id="greet">Good afternoon. <em>How are you feeling today?</em></h2>
-      <div class="moods hide-in-focus" id="moods" role="group" aria-label="Mood"></div>
+      <h2 class="greet" id="greet">Good afternoon. <em>How are you feeling today?</em></h2>
+      <div class="moods" id="moods" role="group" aria-label="Mood"></div>
 
-      <details class="scene hide-in-focus" id="scene">
-        <summary><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 14s4.5-4.2 4.5-7.5a4.5 4.5 0 00-9 0C3.5 9.8 8 14 8 14z" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="6.5" r="1.6" stroke="currentColor" stroke-width="1.4"/></svg><span class="sum empty" id="sceneSum">Set the scene: where, who with, what weather</span><svg class="chev" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <details class="scene" id="scene">
+        <summary><span class="sum-row"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 14s4.5-4.2 4.5-7.5a4.5 4.5 0 00-9 0C3.5 9.8 8 14 8 14z" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="6.5" r="1.6" stroke="currentColor" stroke-width="1.4"/></svg><span class="sum is-empty" id="sceneSum">Set the scene: where, who with, what weather</span><svg class="chev" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></summary>
         <div class="scene-body">
           <div class="scene-row"><span>Where</span><div class="chips" id="sc-where"></div></div>
           <div class="scene-row"><span>Who with</span><div class="chips" id="sc-who"></div></div>
@@ -66,18 +55,18 @@
       </details>
       <div class="ro-scene" id="roScene" hidden></div>
 
-      <div class="prompt hide-in-focus" id="promptBox">
+      <div class="prompt" id="promptBox">
         <p id="promptText">What made you smile today, even a little?</p>
         <button class="icon-btn" id="newPrompt" aria-label="Show another prompt" title="Another prompt"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13 8a5 5 0 11-1.5-3.5M13 2.5v3h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
-      <div class="starters hide-in-focus" id="starters"></div>
+      <div class="starters" id="starters"></div>
 
       <label class="highlight" id="hlBox"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.7 3.6 3.8.5-2.8 2.6.7 3.8L8 10.7l-3.4 1.8.7-3.8L2.5 6.1l3.8-.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><input id="highlight" type="text" maxlength="140" placeholder="Highlight of the day, in one line" autocomplete="off" aria-label="Highlight of the day"></label>
       <input id="title" type="text" placeholder="Give today a title" maxlength="120" autocomplete="off" aria-label="Title">
       <textarea id="body" placeholder="Start anywhere. No one is reading but you…" aria-label="Your page"></textarea>
       <div id="pastEmpty" class="past-empty" hidden><p>You didn't write a page this day. Past days can only be read, so today is the page that's open for you.</p><button class="primary" id="toToday">Go to today</button></div>
       <div id="warn" class="warn" hidden>This browser is blocking storage (private window?). You can still write, but pages won't be kept after you close the tab.</div>
-      <div class="page-foot hide-in-focus" id="pageFoot">
+      <div class="page-foot" id="pageFoot">
         <span id="count">0 words</span>
         <span id="delWrap"></span>
       </div>
@@ -133,7 +122,7 @@
     <div id="list"></div>
   </section>
 
-  <p class="privacy hide-in-focus"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" stroke-width="1.4"/></svg>Ikigai keeps your pages in this browser only. Nothing is sent anywhere.</p>
+  <p class="privacy"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" stroke-width="1.4"/></svg>Ikigai keeps your pages in this browser only. Nothing is sent anywhere.</p>
 </div>
 
 <script src="app.js"></script>
